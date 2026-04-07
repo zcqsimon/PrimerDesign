@@ -437,8 +437,8 @@ export default function PrimerDesignApp() {
           </div>
           <div style={{fontSize:"10px", color:"#3f3f46", marginTop:"5px", lineHeight:1.5}}>
             Designed by Simon Zhang· Singapore Institute of Food and Biotechnology Innovation (SIFBI)<br/>
-            Agency for Science, Technology and Research (A*STAR)
-            congqiang_zhang@a-star.edu.sg
+            Agency for Science, Technology and Research (A*STAR)<br/>
+            <a href="mailto:congqiang_zhang@a-star.edu.sg">Contact me</a> 
           </div>
         </div>
         <div style={{fontSize:"11px", color:"#3f3f46", textAlign:"right"}}>
