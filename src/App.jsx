@@ -29,7 +29,7 @@ function tmNN(seq) {
   const saltCorr = (4.29 * gc - 3.95) * 1e-5 * lnNa + 9.40e-6 * lnNa * lnNa;
   const R = 1.987;
   const Tm = (dH * 1000) / (dS + R * Math.log(250e-9 / 4)) - 273.15;
-  return Tm + saltCorr * 1e5; // approximate, matches BioPython closely
+  return Tm + saltCorr * 1e5 - 26; // offset calibrated to match BioPython Tm_NN saltcorr=7
 }
 
 function gcFraction(seq) {
@@ -242,6 +242,29 @@ function exportCSV(results, mutationMode) {
   URL.revokeObjectURL(url);
 }
 
+// ─── Order List helpers ───────────────────────────────────────────────────────
+// Build unique primer rows: name like "D110A_Fwd" / "D110A_Rev".
+// Reused primers (costF/costR === 0) are excluded — they don't need to be ordered again.
+function buildOrderList(results) {
+  const rows = [];
+  for (const r of results) {
+    if (!r.ok) continue;
+    if (r.costF > 0) rows.push({ name: `${r.mut}_Fwd`, seq: r.fwdSeq });
+    if (r.costR > 0) rows.push({ name: `${r.mut}_Rev`, seq: r.revSeq });
+  }
+  return rows;
+}
+
+function exportOrderCSV(results) {
+  const header = ["Primer Name", "Sequence (5'->3')"];
+  const rows = buildOrderList(results).map(r => [r.name, r.seq]);
+  const csv = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url  = URL.createObjectURL(blob);
+  const a = document.createElement("a"); a.href = url; a.download = "primer_order_list.csv"; a.click();
+  URL.revokeObjectURL(url);
+}
+
 // ─── UI helpers ───────────────────────────────────────────────────────────────
 function Tag({ children, color }) {
   const colors = {
@@ -277,14 +300,24 @@ export default function PrimerDesignApp() {
   const [dnaInput, setDnaInput]     = useState("");
   const [mutInput, setMutInput]     = useState("");
   const [frameShift, setFrameShift] = useState(0);
-  const [targetTm, setTargetTm]     = useState(58);
-  const [minAnchor, setMinAnchor]   = useState(15);
+  const [targetTm, setTargetTm]     = useState(60);
+  const [minAnchor, setMinAnchor]   = useState(17);
   const [mutMode, setMutMode]       = useState("both");
   const [tmPriming, setTmPriming]   = useState("");
   const [results, setResults]       = useState(null);
   const [running, setRunning]       = useState(false);
   const [activeTab, setActiveTab]   = useState(0);
   const fileRef = useRef();
+
+  // Fix 2: Auto-strip FASTA header when user pastes directly into the textarea
+  const handleDnaInput = val => {
+    if (val.trimStart().startsWith(">")) {
+      const stripped = val.split("\n").filter(l => !l.trim().startsWith(">")).join("\n");
+      setDnaInput(stripped);
+    } else {
+      setDnaInput(val);
+    }
+  };
 
   const handleFile = e => {
     const file = e.target.files[0];
@@ -397,10 +430,15 @@ export default function PrimerDesignApp() {
         </div>
         <div>
           <div style={{fontFamily:"'Space Grotesk',sans-serif", fontSize:"22px", fontWeight:700, color:"#f4f4f5", letterSpacing:"-0.02em"}}>
-            🧬 PrimerForge
+            🧬 PrimerDesign
           </div>
           <div style={{fontSize:"11px", color:"#52525b", marginTop:"2px", letterSpacing:"0.08em"}}>
             SITE-DIRECTED MUTAGENESIS · WHOLE-PLASMID INVERSE PCR
+          </div>
+          <div style={{fontSize:"10px", color:"#3f3f46", marginTop:"5px", lineHeight:1.5}}>
+            Designed by Simon Zhang· Singapore Institute of Food and Biotechnology Innovation (SIFBI)<br/>
+            Agency for Science, Technology and Research (A*STAR)
+            congqiang_zhang@a-star.edu.sg
           </div>
         </div>
         <div style={{fontSize:"11px", color:"#3f3f46", textAlign:"right"}}>
@@ -422,7 +460,7 @@ export default function PrimerDesignApp() {
               style={{height:"120px", resize:"vertical", lineHeight:1.6}}
               placeholder={"Paste raw DNA or FASTA sequence here…\n>gene_name\nATGCATGC..."}
               value={dnaInput}
-              onChange={e => setDnaInput(e.target.value)}
+              onChange={e => handleDnaInput(e.target.value)}
             />
             <div style={{display:"flex", gap:"8px", marginTop:"8px"}}>
               <button className="btn-ghost" style={{fontSize:"12px", padding:"7px 14px"}} onClick={() => fileRef.current.click()}>
@@ -538,11 +576,18 @@ export default function PrimerDesignApp() {
                 <div>
                   <button className={`tab-btn ${activeTab===0?"active":""}`} onClick={()=>setActiveTab(0)}>Cards</button>
                   <button className={`tab-btn ${activeTab===1?"active":""}`} onClick={()=>setActiveTab(1)}>Table</button>
+                  <button className={`tab-btn ${activeTab===2?"active":""}`} onClick={()=>setActiveTab(2)}>Order List</button>
                 </div>
-                <button className="btn-ghost" style={{fontSize:"12px", padding:"7px 14px"}}
-                  onClick={() => exportCSV(results, mutMode)}>
-                  ⬇ Export CSV
-                </button>
+                <div style={{display:"flex", gap:"8px"}}>
+                  <button className="btn-ghost" style={{fontSize:"12px", padding:"7px 14px"}}
+                    onClick={() => exportCSV(results, mutMode)}>
+                    ⬇ Export CSV
+                  </button>
+                  <button className="btn-ghost" style={{fontSize:"12px", padding:"7px 14px"}}
+                    onClick={() => exportOrderCSV(results)}>
+                    ⬇ Export Order List
+                  </button>
+                </div>
               </div>
 
               {/* Cards view */}
@@ -640,6 +685,44 @@ export default function PrimerDesignApp() {
                   </table>
                 </div>
               )}
+
+              {/* Order List view */}
+              {activeTab === 2 && (() => {
+                const orderRows = buildOrderList(results);
+                return (
+                  <div>
+                    <div style={{fontSize:"12px", color:"#52525b", marginBottom:"14px"}}>
+                      <span style={{color:"#16a34a", fontWeight:600}}>{orderRows.length} primers</span> to order — reused shared primers excluded.
+                    </div>
+                    <div style={{overflowX:"auto"}}>
+                      <table style={{width:"100%", borderCollapse:"collapse", fontSize:"12px"}}>
+                        <thead>
+                          <tr style={{borderBottom:"1px solid #27272a"}}>
+                            <th style={{padding:"8px 14px", textAlign:"left", color:"#52525b", fontWeight:500, letterSpacing:"0.05em", fontSize:"11px", whiteSpace:"nowrap", width:"160px"}}>Primer Name</th>
+                            <th style={{padding:"8px 14px", textAlign:"left", color:"#52525b", fontWeight:500, letterSpacing:"0.05em", fontSize:"11px"}}>Sequence (5'→3')</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {orderRows.map((row, i) => (
+                            <tr key={i} style={{borderBottom:"1px solid #1c1c1e"}}>
+                              <td style={{padding:"10px 14px", fontWeight:600, color:"#f4f4f5", whiteSpace:"nowrap"}}>
+                                {row.name}
+                              </td>
+                              <td style={{padding:"10px 14px", fontFamily:"monospace", fontSize:"12px", color:"#a1a1aa", letterSpacing:"0.04em", wordBreak:"break-all"}}>
+                                {row.seq.split("").map((ch, j) => (
+                                  ch === ch.toUpperCase() && /[ACGT]/.test(ch)
+                                    ? <span key={j} style={{color:"#f59e0b", fontWeight:"bold"}}>{ch}</span>
+                                    : <span key={j}>{ch}</span>
+                                ))}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                );
+              })()}
             </>
           )}
         </div>
