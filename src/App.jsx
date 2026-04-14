@@ -39,7 +39,14 @@ function gcFraction(seq) {
 }
 
 function reverseComplement(seq) {
-  const comp = { A: "T", T: "A", G: "C", C: "G", a: "t", t: "a", g: "c", c: "g" };
+  const comp = {
+    A:"T", T:"A", G:"C", C:"G",
+    a:"t", t:"a", g:"c", c:"g",
+    // IUPAC ambiguity codes
+    N:"N", n:"n", K:"M", k:"m", M:"K", m:"k",
+    D:"H", d:"h", H:"D", h:"d", B:"V", b:"v", V:"B", v:"b",
+    R:"Y", r:"y", Y:"R", y:"r", S:"S", s:"s", W:"W", w:"w",
+  };
   return seq.split("").reverse().map(b => comp[b] || b).join("");
 }
 
@@ -74,11 +81,49 @@ function growRight(seq, start, end, targetTm, minLen) {
 }
 
 // ─── Codon tables ──────────────────────────────────────────────────────────────
-const E_COLI = {
-  A:"GCG",R:"CGT",N:"AAC",D:"GAT",C:"TGC",Q:"CAG",E:"GAA",G:"GGT",
-  H:"CAT",I:"ATT",L:"CTG",K:"AAA",M:"ATG",F:"TTC",P:"CCG",S:"AGC",
-  T:"ACC",W:"TGG",Y:"TAT",V:"GTG","*":"TAA",
+const DEGENERATE = {
+  X:"NNK", // N=A/C/G/T, K=G/T → encodes all 20 amino acids (32 codons, reduced stop)
+  Z:"NDT", // N=A/C/G/T, D=A/G/T, T=T → 12 codons covering 12 amino acids (NNK subset)
 };
+
+const CODON_TABLES = {
+  ecoli: {
+    label: "E. coli", short: "E. coli",
+    codons: {
+      A:"GCG",R:"CGT",N:"AAC",D:"GAT",C:"TGC",Q:"CAG",E:"GAA",G:"GGT",
+      H:"CAT",I:"ATT",L:"CTG",K:"AAA",M:"ATG",F:"TTC",P:"CCG",S:"AGC",
+      T:"ACC",W:"TGG",Y:"TAT",V:"GTG","*":"TAA", ...DEGENERATE,
+    },
+  },
+  yeast: {
+    label: "S. cerevisiae", short: "S. cer.",
+    codons: {
+      A:"GCT",R:"AGA",N:"AAT",D:"GAT",C:"TGT",Q:"CAA",E:"GAA",G:"GGT",
+      H:"CAT",I:"ATT",L:"TTG",K:"AAG",M:"ATG",F:"TTT",P:"CCA",S:"TCT",
+      T:"ACT",W:"TGG",Y:"TAT",V:"GTT","*":"TAA", ...DEGENERATE,
+    },
+  },
+  pichia: {
+    label: "P. pastoris", short: "P. pas.",
+    codons: {
+      A:"GCT",R:"AGA",N:"AAT",D:"GAT",C:"TGT",Q:"CAA",E:"GAA",G:"GGT",
+      H:"CAT",I:"ATT",L:"TTG",K:"AAG",M:"ATG",F:"TTT",P:"CCA",S:"TCT",
+      T:"ACT",W:"TGG",Y:"TAT",V:"GTT","*":"TAA", ...DEGENERATE,
+    },
+  },
+};
+
+// ─── Dummy example (eGFP) ────────────────────────────────────────────────────
+const EXAMPLE_DNA = `ATGGTGAGCAAGGGCGAGGAGCTGTTCACCGGGGTGGTGCCCATCCTGGTCGAGCTGGACGGCGACGTAAACGGCCACAAGTTCAGCGTGTCCGGCGAGGGCGAGGGCGATGCCACCTACGGCAAGCTGACCCTGAAGTTCATCTGCACCACCGGCAAGCTGCCCGTGCCCTGGCCCACCCTCGTGACCACCCTGACCTACGGCGTGCAGTGCTTCAGCCGCTACCCCGACCACATGAAGCAGCACGACTTCTTCAAGTCCGCCATGCCCGAAGGCTACGTCCAGGAGCGCACCATCTTCTTCAAGGACGACGGCAACTACAAGACCCGCGCCGAGGTGAAGTTCGAGGGCGACACCCTGGTGAACCGCATCGAGCTGAAGGGCATCGACTTCAAGGAGGACGGCAACATCCTGGGGCACAAGCTGGAGTACAACTACAACAGCCACAACGTCTATATCATGGCCGACAAGCAGAAGAACGGCATCAAGGTGAACTTCAAGATCCGCCACAACATCGAGGACGGCAGCGTGCAGCTCGCCGACCACTACCAGCAGAACACCCCCATCGGCGACGGCCCCGTGCTGCTGCCCGACAACCACTACCTGAGCACCCAGTCCGCCCTGAGCAAAGACCCCAACGAGAAGCGCGATCACATGGTCCTGCTGGAGTTCGTGACCGCCGCCGGGATCACTCTCGGCATGGACGAGCTGTACAAGTAA`;
+
+// Mutations: G21A, G21X (NNK), G21Z (NDT) share the same REV primer (fwd mode)
+//            S29A single substitution
+//            T50A single substitution
+const EXAMPLE_MUTATIONS = `G21A
+G21X
+G21Z
+S29A
+T50A`;
 
 const CODON_TABLE = {};
 const bases = ["T","C","A","G"];
@@ -111,9 +156,9 @@ function parseDNA(raw) {
   return seqLines.join("").toUpperCase().replace(/[^ACGT]/g, "");
 }
 
-function designMutations({ dnaSeq, mutations, frameShift, targetTm, minAnchor, mutationMode, targetTmPriming }) {
-  // Default tmPriming: target_tm - 10  (matches Python v2)
+function designMutations({ dnaSeq, mutations, frameShift, targetTm, minAnchor, mutationMode, targetTmPriming, organism }) {
   const tmPriming = targetTmPriming ?? (targetTm - 10);
+  const codonMap  = (CODON_TABLES[organism] || CODON_TABLES.ecoli).codons;
   const dna = parseDNA(dnaSeq);
   const protein = translateDNA(dna);
   const results = [];
@@ -136,31 +181,40 @@ function designMutations({ dnaSeq, mutations, frameShift, targetTm, minAnchor, m
 
       const dnaIdx   = (adjPos - 1) * 3;
       const oldCodon = dna.slice(dnaIdx, dnaIdx + 3);
-      const newCodon = E_COLI[newAA] || "???";
-      if (newCodon === "???") throw new Error(`Unknown amino acid: ${newAA}`);
+      const newCodon = codonMap[newAA] || "???";
+      if (newCodon === "???") throw new Error(`Unknown amino acid "${newAA}" for this organism`);
 
-      const codonInPrimer = oldCodon.split("").map((o, i) =>
-        o.toUpperCase() !== newCodon[i].toUpperCase() ? newCodon[i].toUpperCase() : newCodon[i].toLowerCase()
-      ).join("");
+      const isDegenerate = /[^ACGT]/i.test(newCodon);
 
+      // For degenerate codons: all 3 bases shown uppercase in primer (all are "changed")
+      // For standard codons: only bases that differ from WT are uppercase
+      const codonInPrimer = isDegenerate
+        ? newCodon.toUpperCase()
+        : oldCodon.split("").map((o, i) =>
+            o.toUpperCase() !== newCodon[i].toUpperCase() ? newCodon[i].toUpperCase() : newCodon[i].toLowerCase()
+          ).join("");
+
+      // For Tm growing, always use WT DNA — degenerate bases can't be used in Tm_NN
+      // For standard mutations, use mutDna so the priming region reflects the new codon
       const mutDna   = dna.slice(0, dnaIdx) + newCodon + dna.slice(dnaIdx + 3);
+      const tmDna    = isDegenerate ? dna : mutDna;
       const ovlStart = Math.max(0, dnaIdx - 4);
       const ovlEnd   = Math.min(dna.length, dnaIdx + 3 + 5);
 
       let fwdSeq = "", revSeq = "";
 
       if (mutationMode === "both") {
-        const revUpStart = growLeft(mutDna, ovlStart, dnaIdx, targetTm, minAnchor);
-        const revSense = mutDna.slice(revUpStart, dnaIdx).toLowerCase() + codonInPrimer + mutDna.slice(dnaIdx+3, ovlEnd).toLowerCase();
+        const revUpStart = growLeft(tmDna, ovlStart, dnaIdx, targetTm, minAnchor);
+        const revSense = tmDna.slice(revUpStart, dnaIdx).toLowerCase() + codonInPrimer + tmDna.slice(dnaIdx+3, ovlEnd).toLowerCase();
         revSeq = reverseComplement(revSense);
         const fwdDownEnd = growRight(dna, dnaIdx+3, ovlEnd, targetTm, minAnchor);
-        fwdSeq = mutDna.slice(ovlStart, dnaIdx).toLowerCase() + codonInPrimer + dna.slice(dnaIdx+3, fwdDownEnd).toLowerCase();
+        fwdSeq = tmDna.slice(ovlStart, dnaIdx).toLowerCase() + codonInPrimer + dna.slice(dnaIdx+3, fwdDownEnd).toLowerCase();
 
       } else if (mutationMode === "rev") {
         // REV carries mutation; FWD is pure WT (shared across same-site variants)
-        const revTailEnd = Math.min(mutDna.length, dnaIdx + 3 + 12);
-        const revUpStart = growLeft(mutDna, Math.max(0, dnaIdx - minAnchor), dnaIdx, tmPriming, minAnchor);
-        const revSense = mutDna.slice(revUpStart, dnaIdx).toLowerCase() + codonInPrimer + mutDna.slice(dnaIdx+3, revTailEnd).toLowerCase();
+        const revTailEnd = Math.min(tmDna.length, dnaIdx + 3 + 12);
+        const revUpStart = growLeft(tmDna, Math.max(0, dnaIdx - minAnchor), dnaIdx, tmPriming, minAnchor);
+        const revSense = tmDna.slice(revUpStart, dnaIdx).toLowerCase() + codonInPrimer + tmDna.slice(dnaIdx+3, revTailEnd).toLowerCase();
         revSeq = reverseComplement(revSense);
         const fwdStart   = dnaIdx + 3;
         const fwdDownEnd = growRight(dna, fwdStart, fwdStart + minAnchor, targetTm, minAnchor);
@@ -179,7 +233,7 @@ function designMutations({ dnaSeq, mutations, frameShift, targetTm, minAnchor, m
         const fwdUpStart = Math.max(0, dnaIdx - 12);
         const downStart  = dnaIdx + 3;
         const fwdDownEnd = growRight(dna, downStart, downStart + minAnchor - 2, tmPriming, minAnchor);
-        fwdSeq = mutDna.slice(fwdUpStart, dnaIdx).toLowerCase() + codonInPrimer + dna.slice(downStart, fwdDownEnd).toLowerCase();
+        fwdSeq = tmDna.slice(fwdUpStart, dnaIdx).toLowerCase() + codonInPrimer + dna.slice(downStart, fwdDownEnd).toLowerCase();
       }
 
       const fwdTm = +tmNN(fwdSeq).toFixed(1);
@@ -213,7 +267,7 @@ function designMutations({ dnaSeq, mutations, frameShift, targetTm, minAnchor, m
         fwdLen: fwdSeq.length, revLen: revSeq.length,
         costF, costR, codonChange, sharedNote,
         warns: warns.length ? warns.join("; ") : "OK",
-        mutDnaSeq: mutDna.slice(0, dnaIdx).toLowerCase() + codonInPrimer + mutDna.slice(dnaIdx+3).toLowerCase(),
+        mutDnaSeq: dna.slice(0, dnaIdx).toLowerCase() + codonInPrimer + dna.slice(dnaIdx+3).toLowerCase(),
       });
     } catch(e) {
       results.push({ mut, ok: false, error: e.message });
@@ -302,6 +356,7 @@ export default function PrimerDesignApp() {
   const [frameShift, setFrameShift] = useState(0);
   const [targetTm, setTargetTm]     = useState(60);
   const [minAnchor, setMinAnchor]   = useState(17);
+  const [organism, setOrganism]     = useState("ecoli");
   const [mutMode, setMutMode]       = useState("both");
   const [tmPriming, setTmPriming]   = useState("");
   const [results, setResults]       = useState(null);
@@ -347,7 +402,7 @@ export default function PrimerDesignApp() {
         const res = designMutations({
           dnaSeq: dna, mutations: muts, frameShift: +frameShift,
           targetTm: +targetTm, minAnchor: +minAnchor,
-          mutationMode: mutMode,
+          mutationMode: mutMode, organism,
           targetTmPriming: tmPriming !== "" ? +tmPriming : undefined,
         });
         setResults(res);
@@ -355,7 +410,7 @@ export default function PrimerDesignApp() {
       } catch(e) { alert("Error: " + e.message); }
       setRunning(false);
     }, 30);
-  }, [dnaInput, mutInput, frameShift, targetTm, minAnchor, mutMode, tmPriming]);
+  }, [dnaInput, mutInput, frameShift, targetTm, minAnchor, mutMode, tmPriming, organism]);
 
   const totalCost = results ? results.reduce((s,r) => s + (r.ok ? r.costF + r.costR : 0), 0) : 0;
   const okCount   = results ? results.filter(r => r.ok).length : 0;
@@ -435,16 +490,31 @@ export default function PrimerDesignApp() {
           <div style={{fontSize:"11px", color:"#52525b", marginTop:"2px", letterSpacing:"0.08em"}}>
             SITE-DIRECTED MUTAGENESIS · WHOLE-PLASMID INVERSE PCR
           </div>
-          <div style={{fontSize:"10px", color:"#3f3f46", marginTop:"5px", lineHeight:1.5}}>
-            Designed by Simon Zhang· Singapore Institute of Food and Biotechnology Innovation (SIFBI)<br/>
+          <div style={{fontSize:"10px", color:"#3f3f46", marginTop:"5px", lineHeight:1.7}}>
+            Designed by Simon Zhang · Singapore Institute of Food and Biotechnology Innovation (SIFBI)<br/>
             Agency for Science, Technology and Research (A*STAR)<br/>
-            <a href="mailto:congqiang_zhang@a-star.edu.sg">Contact me</a> 
+            <a href="mailto:simon_zhang@sifbi.a-star.edu.sg" style={{color:"#16a34a", textDecoration:"none"}}>
+              Contact me
+            </a>
           </div>
         </div>
-        <div style={{fontSize:"11px", color:"#3f3f46", textAlign:"right"}}>
-          <div>E. coli optimized codons</div>
-          <div>SantaLucia 1998 · Owczarzy 2004</div>
-          <div style={{color:"#16a34a"}}>SGD {PRICE_PER_BP}/bp</div>
+        <div style={{fontSize:"11px", color:"#3f3f46", textAlign:"right", lineHeight:1.7}}>
+          <div style={{color:"#52525b"}}>
+            {CODON_TABLES[organism]?.label} codon usage
+          </div>
+          <div style={{fontSize:"10px"}}>
+            <span title="E. coli: Hershberg &amp; Petrov 2008 · Proc Natl Acad Sci">Hershberg &amp; Petrov 2008</span>
+            {" · "}
+            <span title="S. cerevisiae: Sharp &amp; Li 1987 · Nucleic Acids Res">Sharp &amp; Li 1987</span>
+            {" · "}
+            <span title="P. pastoris: Xu et al. 2021 · Microb Cell Fact">Xu et al. 2021</span>
+          </div>
+          <div style={{fontSize:"10px"}}>
+            <span title="Tm: SantaLucia 1998 · PNAS">SantaLucia 1998</span>
+            {" · "}
+            <span title="Salt correction: Owczarzy et al. 2004 · Biochemistry">Owczarzy 2004</span>
+          </div>
+          <div style={{color:"#16a34a", fontSize:"11px"}}>SGD {PRICE_PER_BP}/bp</div>
         </div>
       </div>
 
@@ -466,10 +536,34 @@ export default function PrimerDesignApp() {
               <button className="btn-ghost" style={{fontSize:"12px", padding:"7px 14px"}} onClick={() => fileRef.current.click()}>
                 📂 Load FASTA
               </button>
+              <button className="btn-ghost" style={{fontSize:"12px", padding:"7px 14px"}} onClick={() => {
+                setDnaInput(EXAMPLE_DNA);
+                setMutInput(EXAMPLE_MUTATIONS);
+                setFrameShift(0);
+              }}>
+                💡 Load Example
+              </button>
               <input ref={fileRef} type="file" accept=".fasta,.fa,.txt" style={{display:"none"}} onChange={handleFile} />
               {dnaInput && <span style={{fontSize:"11px", color:"#52525b", alignSelf:"center"}}>
                 {parseDNA(dnaInput).length.toLocaleString()} nt
               </span>}
+            </div>
+          </div>
+
+          {/* Organism */}
+          <div style={{marginBottom:"20px"}}>
+            <div style={{fontSize:"11px", fontWeight:600, color:"#52525b", letterSpacing:"0.1em", marginBottom:"8px"}}>ORGANISM (CODON USAGE)</div>
+            <div style={{display:"flex", gap:"4px", background:"#0c0c0e", padding:"4px", borderRadius:"8px", border:"1px solid #27272a"}}>
+              {Object.entries(CODON_TABLES).map(([key, val]) => (
+                <button key={key} className={`mode-btn ${organism===key?"active":"inactive"}`} onClick={() => setOrganism(key)}>
+                  {val.short}
+                </button>
+              ))}
+            </div>
+            <div style={{fontSize:"11px", color:"#3f3f46", marginTop:"6px", lineHeight:1.5}}>
+              {organism === "ecoli"  && "E. coli K-12 most frequent codons."}
+              {organism === "yeast"  && "S. cerevisiae most frequent codons."}
+              {organism === "pichia" && "P. pastoris (K. phaffii) most frequent codons."}
             </div>
           </div>
 
@@ -479,12 +573,13 @@ export default function PrimerDesignApp() {
             <textarea
               className="input-field"
               style={{height:"100px", resize:"vertical"}}
-              placeholder={"D110A, D110F, D110C\nT50W\nF40A"}
+              placeholder={"G21A, G21X, G21Z\nS29A, T50A"}
               value={mutInput}
               onChange={e => setMutInput(e.target.value)}
             />
-            <div style={{fontSize:"11px", color:"#3f3f46", marginTop:"4px"}}>
-              Comma, space, or newline separated. Format: <span style={{color:"#16a34a"}}>X123Y</span>
+            <div style={{fontSize:"11px", color:"#3f3f46", marginTop:"4px", lineHeight:1.6}}>
+              Comma, space, or newline separated. Format: <span style={{color:"#16a34a"}}>X123Y</span><br/>
+              Degenerate: <span style={{color:"#f59e0b"}}>X</span> = NNK (all 20 AA) · <span style={{color:"#f59e0b"}}>Z</span> = NDT (12 AA subset)
             </div>
           </div>
 
@@ -616,7 +711,7 @@ export default function PrimerDesignApp() {
                           Codon: <span style={{color:"#e4e4e7"}}>{r.codonChange}</span>
                         </div>
                         <div style={{fontSize:"12px", color:"#52525b"}}>
-                          Mode: <span style={{color:"#e4e4e7"}}>mutation={mutMode}</span>
+                          Mode: <span style={{color:"#e4e4e7"}}>mutation={mutMode} · {CODON_TABLES[organism]?.label}</span>
                         </div>
                       </div>
 
