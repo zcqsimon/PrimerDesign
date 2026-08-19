@@ -435,7 +435,7 @@ export default function PrimerDesignApp() {
         .btn-primary:hover { filter:brightness(1.15); transform:translateY(-1px); }
         .btn-primary:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
         .btn-ghost {
-          background:transparent; border:1px solid #3f3f46; color:#a1a1aa;
+          background:transparent; border:1px solid #3f3f46; color:#d4d4d8;
           border-radius:8px; padding:10px 20px; font-family:'IBM Plex Mono',monospace;
           font-size:13px; cursor:pointer; transition:all 0.2s;
         }
@@ -453,8 +453,8 @@ export default function PrimerDesignApp() {
           transition:all 0.2s; letter-spacing:0.03em;
         }
         .mode-btn.active { background:#16a34a; color:#fff; box-shadow:0 0 12px rgba(22,163,74,0.4); }
-        .mode-btn.inactive { background:#27272a; color:#71717a; }
-        .mode-btn.inactive:hover { background:#3f3f46; color:#a1a1aa; }
+        .mode-btn.inactive { background:#27272a; color:#a1a1aa; }
+        .mode-btn.inactive:hover { background:#3f3f46; color:#d4d4d8; }
         .result-card {
           background:#18181b; border:1px solid #27272a; border-radius:10px;
           padding:20px; margin-bottom:12px; transition:border-color 0.2s;
@@ -466,14 +466,26 @@ export default function PrimerDesignApp() {
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
         .tab-btn {
           padding:8px 18px; border:none; background:transparent; cursor:pointer;
-          font-family:'IBM Plex Mono',monospace; font-size:12px; color:#71717a;
+          font-family:'IBM Plex Mono',monospace; font-size:12px; color:#a1a1aa;
           border-bottom:2px solid transparent; transition:all 0.2s;
         }
-        .tab-btn.active { color:#16a34a; border-bottom-color:#16a34a; }
-        .tab-btn:hover:not(.active) { color:#a1a1aa; }
+        .tab-btn.active { color:#22c55e; border-bottom-color:#16a34a; }
+        .tab-btn:hover:not(.active) { color:#d4d4d8; }
+        .btn-help {
+          display:inline-flex; align-items:center; gap:7px;
+          background:linear-gradient(135deg, rgba(22,163,74,0.20), rgba(22,163,74,0.07));
+          border:1px solid #16a34a; color:#4ade80;
+          border-radius:8px; padding:8px 16px; text-decoration:none;
+          font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:600;
+          letter-spacing:0.03em; transition:all 0.2s; white-space:nowrap;
+        }
+        .btn-help:hover {
+          background:#16a34a; color:#fff;
+          box-shadow:0 0 18px rgba(22,163,74,0.45); transform:translateY(-1px);
+        }
         .helix {
           position:absolute; right:0; top:0; opacity:0.04; pointer-events:none;
-          font-size:11px; line-height:1.6; color:#16a34a; font-family:monospace;
+          font-size:11px; line-height:1.6; color:#22c55e; font-family:monospace;
           width:200px; overflow:hidden; height:100%; white-space:pre;
         }
       `}</style>
@@ -487,23 +499,24 @@ export default function PrimerDesignApp() {
           <div style={{fontFamily:"'Space Grotesk',sans-serif", fontSize:"22px", fontWeight:700, color:"#f4f4f5", letterSpacing:"-0.02em"}}>
             🧬 PrimerDesign
           </div>
-          <div style={{fontSize:"11px", color:"#52525b", marginTop:"2px", letterSpacing:"0.08em"}}>
+          <div style={{fontSize:"11px", color:"#d4d4d8", marginTop:"2px", letterSpacing:"0.08em"}}>
             SITE-DIRECTED MUTAGENESIS · WHOLE-PLASMID INVERSE PCR
           </div>
-          <div style={{fontSize:"10px", color:"#3f3f46", marginTop:"5px", lineHeight:1.7}}>
+          <div style={{fontSize:"11px", color:"#a1a1aa", marginTop:"6px", lineHeight:1.7}}>
             Designed by Simon, Congqiang Zhang · Singapore Institute of Food and Biotechnology Innovation (SIFBI)<br/>
-            Agency for Science, Technology and Research (A*STAR)<br/>
-            <a href="/help.html" style={{color:"#16a34a", textDecoration:"none"}}>
-              📖 Help &amp; user guide
+            Agency for Science, Technology and Research (A*STAR)
+          </div>
+          <div style={{display:"flex", alignItems:"center", gap:"16px", marginTop:"11px"}}>
+            <a href="/help.html" className="btn-help">
+              📖 Help &amp; User Guide
             </a>
-            {" · "}
-            <a href="mailto:congqiang_zhang@a-star.edu.sg" style={{color:"#16a34a", textDecoration:"none"}}>
+            <a href="mailto:congqiang_zhang@a-star.edu.sg" style={{color:"#22c55e", fontSize:"12px", textDecoration:"none"}}>
               Contact me
             </a>
           </div>
         </div>
-        <div style={{fontSize:"11px", color:"#3f3f46", textAlign:"right", lineHeight:1.7}}>
-          <div style={{color:"#52525b"}}>
+        <div style={{fontSize:"11px", color:"#a1a1aa", textAlign:"right", lineHeight:1.7}}>
+          <div style={{color:"#d4d4d8"}}>
             {CODON_TABLES[organism]?.label} codon usage
           </div>
           <div style={{fontSize:"10px"}}>
@@ -518,7 +531,7 @@ export default function PrimerDesignApp() {
             {" · "}
             <span title="Salt correction: Owczarzy et al. 2004 · Biochemistry">Owczarzy 2004</span>
           </div>
-          <div style={{color:"#16a34a", fontSize:"11px"}}>SGD {PRICE_PER_BP}/bp</div>
+          <div style={{color:"#22c55e", fontSize:"11px"}}>SGD {PRICE_PER_BP}/bp</div>
         </div>
       </div>
 
@@ -528,7 +541,7 @@ export default function PrimerDesignApp() {
           
           {/* DNA Sequence */}
           <div style={{marginBottom:"20px"}}>
-            <div style={{fontSize:"11px", fontWeight:600, color:"#52525b", letterSpacing:"0.1em", marginBottom:"8px"}}>DNA SEQUENCE</div>
+            <div style={{fontSize:"11px", fontWeight:600, color:"#d4d4d8", letterSpacing:"0.1em", marginBottom:"8px"}}>DNA SEQUENCE</div>
             <textarea
               className="input-field"
               style={{height:"120px", resize:"vertical", lineHeight:1.6}}
@@ -548,7 +561,7 @@ export default function PrimerDesignApp() {
                 💡 Load Example
               </button>
               <input ref={fileRef} type="file" accept=".fasta,.fa,.txt" style={{display:"none"}} onChange={handleFile} />
-              {dnaInput && <span style={{fontSize:"11px", color:"#52525b", alignSelf:"center"}}>
+              {dnaInput && <span style={{fontSize:"11px", color:"#d4d4d8", alignSelf:"center"}}>
                 {parseDNA(dnaInput).length.toLocaleString()} nt
               </span>}
             </div>
@@ -556,7 +569,7 @@ export default function PrimerDesignApp() {
 
           {/* Organism */}
           <div style={{marginBottom:"20px"}}>
-            <div style={{fontSize:"11px", fontWeight:600, color:"#52525b", letterSpacing:"0.1em", marginBottom:"8px"}}>ORGANISM (CODON USAGE)</div>
+            <div style={{fontSize:"11px", fontWeight:600, color:"#d4d4d8", letterSpacing:"0.1em", marginBottom:"8px"}}>ORGANISM (CODON USAGE)</div>
             <div style={{display:"flex", gap:"4px", background:"#0c0c0e", padding:"4px", borderRadius:"8px", border:"1px solid #27272a"}}>
               {Object.entries(CODON_TABLES).map(([key, val]) => (
                 <button key={key} className={`mode-btn ${organism===key?"active":"inactive"}`} onClick={() => setOrganism(key)}>
@@ -564,7 +577,7 @@ export default function PrimerDesignApp() {
                 </button>
               ))}
             </div>
-            <div style={{fontSize:"11px", color:"#3f3f46", marginTop:"6px", lineHeight:1.5}}>
+            <div style={{fontSize:"11px", color:"#a1a1aa", marginTop:"6px", lineHeight:1.5}}>
               {organism === "ecoli"  && "E. coli K-12 most frequent codons."}
               {organism === "yeast"  && "S. cerevisiae most frequent codons."}
               {organism === "pichia" && "P. pastoris (K. phaffii) most frequent codons."}
@@ -573,7 +586,7 @@ export default function PrimerDesignApp() {
 
           {/* Mutations */}
           <div style={{marginBottom:"20px"}}>
-            <div style={{fontSize:"11px", fontWeight:600, color:"#52525b", letterSpacing:"0.1em", marginBottom:"8px"}}>MUTATIONS</div>
+            <div style={{fontSize:"11px", fontWeight:600, color:"#d4d4d8", letterSpacing:"0.1em", marginBottom:"8px"}}>MUTATIONS</div>
             <textarea
               className="input-field"
               style={{height:"100px", resize:"vertical"}}
@@ -581,15 +594,15 @@ export default function PrimerDesignApp() {
               value={mutInput}
               onChange={e => setMutInput(e.target.value)}
             />
-            <div style={{fontSize:"11px", color:"#3f3f46", marginTop:"4px", lineHeight:1.6}}>
-              Comma, space, or newline separated. Format: <span style={{color:"#16a34a"}}>X123Y</span><br/>
+            <div style={{fontSize:"11px", color:"#a1a1aa", marginTop:"4px", lineHeight:1.6}}>
+              Comma, space, or newline separated. Format: <span style={{color:"#22c55e"}}>X123Y</span><br/>
               Degenerate: <span style={{color:"#f59e0b"}}>X</span> = NNK (all 20 AA) · <span style={{color:"#f59e0b"}}>Z</span> = NDT (12 AA subset)
             </div>
           </div>
 
           {/* Mutation Mode */}
           <div style={{marginBottom:"20px"}}>
-            <div style={{fontSize:"11px", fontWeight:600, color:"#52525b", letterSpacing:"0.1em", marginBottom:"8px"}}>MUTATION MODE</div>
+            <div style={{fontSize:"11px", fontWeight:600, color:"#d4d4d8", letterSpacing:"0.1em", marginBottom:"8px"}}>MUTATION MODE</div>
             <div style={{display:"flex", gap:"4px", background:"#0c0c0e", padding:"4px", borderRadius:"8px", border:"1px solid #27272a"}}>
               {["both","fwd","rev"].map(m => (
                 <button key={m} className={`mode-btn ${mutMode===m?"active":"inactive"}`} onClick={() => setMutMode(m)}>
@@ -597,7 +610,7 @@ export default function PrimerDesignApp() {
                 </button>
               ))}
             </div>
-            <div style={{fontSize:"11px", color:"#3f3f46", marginTop:"6px", lineHeight:1.5}}>
+            <div style={{fontSize:"11px", color:"#a1a1aa", marginTop:"6px", lineHeight:1.5}}>
               {mutMode === "both" && "Both primers carry the mutation. Full overlap design."}
               {mutMode === "fwd" && "FWD carries mutation; REV is pure WT and shared across same-site variants."}
               {mutMode === "rev" && "REV carries mutation; FWD is pure WT and shared across same-site variants."}
@@ -606,22 +619,22 @@ export default function PrimerDesignApp() {
 
           {/* Parameters */}
           <div style={{marginBottom:"20px"}}>
-            <div style={{fontSize:"11px", fontWeight:600, color:"#52525b", letterSpacing:"0.1em", marginBottom:"10px"}}>PARAMETERS</div>
+            <div style={{fontSize:"11px", fontWeight:600, color:"#d4d4d8", letterSpacing:"0.1em", marginBottom:"10px"}}>PARAMETERS</div>
             <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:"10px"}}>
               <div>
-                <div style={{fontSize:"11px", color:"#52525b", marginBottom:"4px"}}>Frame shift</div>
+                <div style={{fontSize:"11px", color:"#d4d4d8", marginBottom:"4px"}}>Frame shift</div>
                 <input className="input-field" type="number" value={frameShift} onChange={e=>setFrameShift(e.target.value)} placeholder="0"/>
               </div>
               <div>
-                <div style={{fontSize:"11px", color:"#52525b", marginBottom:"4px"}}>Target Tm (°C)</div>
+                <div style={{fontSize:"11px", color:"#d4d4d8", marginBottom:"4px"}}>Target Tm (°C)</div>
                 <input className="input-field" type="number" value={targetTm} onChange={e=>setTargetTm(e.target.value)} placeholder="58"/>
               </div>
               <div>
-                <div style={{fontSize:"11px", color:"#52525b", marginBottom:"4px"}}>Min anchor (nt)</div>
+                <div style={{fontSize:"11px", color:"#d4d4d8", marginBottom:"4px"}}>Min anchor (nt)</div>
                 <input className="input-field" type="number" value={minAnchor} onChange={e=>setMinAnchor(e.target.value)} placeholder="15"/>
               </div>
               <div>
-                <div style={{fontSize:"11px", color:"#52525b", marginBottom:"4px"}}>Tm priming (°C)</div>
+                <div style={{fontSize:"11px", color:"#d4d4d8", marginBottom:"4px"}}>Tm priming (°C)</div>
                 <input className="input-field" type="number" value={tmPriming} onChange={e=>setTmPriming(e.target.value)} placeholder={`default: Tm−10`}/>
               </div>
             </div>
@@ -635,12 +648,12 @@ export default function PrimerDesignApp() {
         {/* Right panel — results */}
         <div style={{overflowY:"auto", padding:"24px 28px"}}>
           {!results && (
-            <div style={{display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:"100%", color:"#3f3f46", textAlign:"center"}}>
+            <div style={{display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:"100%", color:"#a1a1aa", textAlign:"center"}}>
               <div style={{fontSize:"48px", marginBottom:"16px"}}>🧬</div>
-              <div style={{fontFamily:"'Space Grotesk',sans-serif", fontSize:"18px", color:"#52525b", fontWeight:600}}>
+              <div style={{fontFamily:"'Space Grotesk',sans-serif", fontSize:"18px", color:"#d4d4d8", fontWeight:600}}>
                 No results yet
               </div>
-              <div style={{fontSize:"13px", marginTop:"8px", color:"#3f3f46", maxWidth:"320px", lineHeight:1.6}}>
+              <div style={{fontSize:"13px", marginTop:"8px", color:"#a1a1aa", maxWidth:"320px", lineHeight:1.6}}>
                 Enter your DNA sequence and mutation list, then click Design Primers to get started.
               </div>
             </div>
@@ -651,20 +664,20 @@ export default function PrimerDesignApp() {
               {/* Summary bar */}
               <div style={{display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:"12px", marginBottom:"24px"}}>
                 <div className="stat-box">
-                  <div style={{fontSize:"11px", color:"#52525b", marginBottom:"4px"}}>PROCESSED</div>
+                  <div style={{fontSize:"11px", color:"#d4d4d8", marginBottom:"4px"}}>PROCESSED</div>
                   <div style={{fontSize:"22px", fontWeight:600, color:"#f4f4f5", fontFamily:"'Space Grotesk',sans-serif"}}>{results.length}</div>
                 </div>
                 <div className="stat-box">
-                  <div style={{fontSize:"11px", color:"#52525b", marginBottom:"4px"}}>WARNINGS</div>
+                  <div style={{fontSize:"11px", color:"#d4d4d8", marginBottom:"4px"}}>WARNINGS</div>
                   <div style={{fontSize:"22px", fontWeight:600, color: warnCount ? "#f59e0b" : "#16a34a", fontFamily:"'Space Grotesk',sans-serif"}}>{warnCount}</div>
                 </div>
                 <div className="stat-box">
-                  <div style={{fontSize:"11px", color:"#52525b", marginBottom:"4px"}}>ERRORS</div>
+                  <div style={{fontSize:"11px", color:"#d4d4d8", marginBottom:"4px"}}>ERRORS</div>
                   <div style={{fontSize:"22px", fontWeight:600, color: errCount ? "#ef4444" : "#16a34a", fontFamily:"'Space Grotesk',sans-serif"}}>{errCount}</div>
                 </div>
                 <div className="stat-box">
-                  <div style={{fontSize:"11px", color:"#52525b", marginBottom:"4px"}}>TOTAL COST</div>
-                  <div style={{fontSize:"22px", fontWeight:600, color:"#16a34a", fontFamily:"'Space Grotesk',sans-serif"}}>
+                  <div style={{fontSize:"11px", color:"#d4d4d8", marginBottom:"4px"}}>TOTAL COST</div>
+                  <div style={{fontSize:"22px", fontWeight:600, color:"#22c55e", fontFamily:"'Space Grotesk',sans-serif"}}>
                     SGD {totalCost.toFixed(2)}
                   </div>
                 </div>
@@ -711,10 +724,10 @@ export default function PrimerDesignApp() {
                   {r.ok && (
                     <>
                       <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:"8px", marginBottom:"12px"}}>
-                        <div style={{fontSize:"12px", color:"#52525b"}}>
+                        <div style={{fontSize:"12px", color:"#d4d4d8"}}>
                           Codon: <span style={{color:"#e4e4e7"}}>{r.codonChange}</span>
                         </div>
-                        <div style={{fontSize:"12px", color:"#52525b"}}>
+                        <div style={{fontSize:"12px", color:"#d4d4d8"}}>
                           Mode: <span style={{color:"#e4e4e7"}}>mutation={mutMode} · {CODON_TABLES[organism]?.label}</span>
                         </div>
                       </div>
@@ -722,7 +735,7 @@ export default function PrimerDesignApp() {
                       <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:"16px"}}>
                         <div>
                           <PrimerSeq seq={r.fwdSeq} label="Forward" />
-                          <div style={{display:"flex", gap:"12px", marginTop:"6px", fontSize:"11px", color:"#52525b"}}>
+                          <div style={{display:"flex", gap:"12px", marginTop:"6px", fontSize:"11px", color:"#d4d4d8"}}>
                             <span>{r.fwdLen} nt</span>
                             <span>Tm <span style={{color: r.fwdTm<55?"#ef4444":"#a1a1aa"}}>{r.fwdTm}°C</span></span>
                             <span>GC <span style={{color: r.fwdGC<40||r.fwdGC>65?"#ef4444":"#a1a1aa"}}>{r.fwdGC}%</span></span>
@@ -731,7 +744,7 @@ export default function PrimerDesignApp() {
                         </div>
                         <div>
                           <PrimerSeq seq={r.revSeq} label="Reverse" />
-                          <div style={{display:"flex", gap:"12px", marginTop:"6px", fontSize:"11px", color:"#52525b"}}>
+                          <div style={{display:"flex", gap:"12px", marginTop:"6px", fontSize:"11px", color:"#d4d4d8"}}>
                             <span>{r.revLen} nt</span>
                             <span>Tm <span style={{color: r.revTm<55?"#ef4444":"#a1a1aa"}}>{r.revTm}°C</span></span>
                             <span>GC <span style={{color: r.revGC<40||r.revGC>65?"#ef4444":"#a1a1aa"}}>{r.revGC}%</span></span>
@@ -751,7 +764,7 @@ export default function PrimerDesignApp() {
                     <thead>
                       <tr style={{borderBottom:"1px solid #27272a"}}>
                         {["Mutation","Fwd Primer","Rev Primer","Len F","Tm F","GC% F","Len R","Tm R","GC% R","Cost F","Cost R","Codon","Shared","Warnings"].map(h => (
-                          <th key={h} style={{padding:"8px 12px", textAlign:"left", color:"#52525b", fontWeight:500, letterSpacing:"0.05em", fontSize:"11px", whiteSpace:"nowrap"}}>{h}</th>
+                          <th key={h} style={{padding:"8px 12px", textAlign:"left", color:"#d4d4d8", fontWeight:500, letterSpacing:"0.05em", fontSize:"11px", whiteSpace:"nowrap"}}>{h}</th>
                         ))}
                       </tr>
                     </thead>
@@ -761,17 +774,17 @@ export default function PrimerDesignApp() {
                           <td style={{padding:"8px 12px", fontWeight:600, color:"#f4f4f5", whiteSpace:"nowrap"}}>{r.mut}</td>
                           {r.ok ? (
                             <>
-                              <td style={{padding:"8px 12px", fontFamily:"monospace", color:"#a1a1aa", maxWidth:"200px", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap"}} title={r.fwdSeq}>{r.fwdSeq}</td>
-                              <td style={{padding:"8px 12px", fontFamily:"monospace", color:"#a1a1aa", maxWidth:"200px", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap"}} title={r.revSeq}>{r.revSeq}</td>
-                              <td style={{padding:"8px 12px", color:"#71717a"}}>{r.fwdLen}</td>
+                              <td style={{padding:"8px 12px", fontFamily:"monospace", color:"#d4d4d8", maxWidth:"200px", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap"}} title={r.fwdSeq}>{r.fwdSeq}</td>
+                              <td style={{padding:"8px 12px", fontFamily:"monospace", color:"#d4d4d8", maxWidth:"200px", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap"}} title={r.revSeq}>{r.revSeq}</td>
+                              <td style={{padding:"8px 12px", color:"#a1a1aa"}}>{r.fwdLen}</td>
                               <td style={{padding:"8px 12px", color: r.fwdTm<55?"#ef4444":"#71717a"}}>{r.fwdTm}</td>
                               <td style={{padding:"8px 12px", color: r.fwdGC<40||r.fwdGC>65?"#ef4444":"#71717a"}}>{r.fwdGC}</td>
-                              <td style={{padding:"8px 12px", color:"#71717a"}}>{r.revLen}</td>
+                              <td style={{padding:"8px 12px", color:"#a1a1aa"}}>{r.revLen}</td>
                               <td style={{padding:"8px 12px", color: r.revTm<55?"#ef4444":"#71717a"}}>{r.revTm}</td>
                               <td style={{padding:"8px 12px", color: r.revGC<40||r.revGC>65?"#ef4444":"#71717a"}}>{r.revGC}</td>
                               <td style={{padding:"8px 12px", color: r.costF===0?"#7c3aed":"#16a34a"}}>{r.costF.toFixed(2)}</td>
                               <td style={{padding:"8px 12px", color: r.costR===0?"#7c3aed":"#16a34a"}}>{r.costR.toFixed(2)}</td>
-                              <td style={{padding:"8px 12px", color:"#71717a", whiteSpace:"nowrap"}}>{r.codonChange}</td>
+                              <td style={{padding:"8px 12px", color:"#a1a1aa", whiteSpace:"nowrap"}}>{r.codonChange}</td>
                               <td style={{padding:"8px 12px", color:"#7c3aed", fontSize:"11px"}}>{r.sharedNote || "—"}</td>
                               <td style={{padding:"8px 12px", color: r.warns==="OK"?"#16a34a":"#f59e0b"}}>{r.warns}</td>
                             </>
@@ -790,15 +803,15 @@ export default function PrimerDesignApp() {
                 const orderRows = buildOrderList(results);
                 return (
                   <div>
-                    <div style={{fontSize:"12px", color:"#52525b", marginBottom:"14px"}}>
-                      <span style={{color:"#16a34a", fontWeight:600}}>{orderRows.length} primers</span> to order — reused shared primers excluded.
+                    <div style={{fontSize:"12px", color:"#d4d4d8", marginBottom:"14px"}}>
+                      <span style={{color:"#22c55e", fontWeight:600}}>{orderRows.length} primers</span> to order — reused shared primers excluded.
                     </div>
                     <div style={{overflowX:"auto"}}>
                       <table style={{width:"100%", borderCollapse:"collapse", fontSize:"12px"}}>
                         <thead>
                           <tr style={{borderBottom:"1px solid #27272a"}}>
-                            <th style={{padding:"8px 14px", textAlign:"left", color:"#52525b", fontWeight:500, letterSpacing:"0.05em", fontSize:"11px", whiteSpace:"nowrap", width:"160px"}}>Primer Name</th>
-                            <th style={{padding:"8px 14px", textAlign:"left", color:"#52525b", fontWeight:500, letterSpacing:"0.05em", fontSize:"11px"}}>Sequence (5'→3')</th>
+                            <th style={{padding:"8px 14px", textAlign:"left", color:"#d4d4d8", fontWeight:500, letterSpacing:"0.05em", fontSize:"11px", whiteSpace:"nowrap", width:"160px"}}>Primer Name</th>
+                            <th style={{padding:"8px 14px", textAlign:"left", color:"#d4d4d8", fontWeight:500, letterSpacing:"0.05em", fontSize:"11px"}}>Sequence (5'→3')</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -807,7 +820,7 @@ export default function PrimerDesignApp() {
                               <td style={{padding:"10px 14px", fontWeight:600, color:"#f4f4f5", whiteSpace:"nowrap"}}>
                                 {row.name}
                               </td>
-                              <td style={{padding:"10px 14px", fontFamily:"monospace", fontSize:"12px", color:"#a1a1aa", letterSpacing:"0.04em", wordBreak:"break-all"}}>
+                              <td style={{padding:"10px 14px", fontFamily:"monospace", fontSize:"12px", color:"#d4d4d8", letterSpacing:"0.04em", wordBreak:"break-all"}}>
                                 {row.seq.split("").map((ch, j) => (
                                   ch === ch.toUpperCase() && /[ACGT]/.test(ch)
                                     ? <span key={j} style={{color:"#f59e0b", fontWeight:"bold"}}>{ch}</span>
