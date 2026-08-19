@@ -483,6 +483,16 @@ export default function PrimerDesignApp() {
           background:#16a34a; color:#fff;
           box-shadow:0 0 18px rgba(22,163,74,0.45); transform:translateY(-1px);
         }
+        .btn-lab {
+          display:inline-flex; align-items:center; gap:7px;
+          background:transparent; border:1px solid #3f3f46; color:#d4d4d8;
+          border-radius:8px; padding:8px 16px; text-decoration:none;
+          font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:500;
+          letter-spacing:0.03em; transition:all 0.2s; white-space:nowrap;
+        }
+        .btn-lab:hover {
+          border-color:#22c55e; color:#4ade80; transform:translateY(-1px);
+        }
         .helix {
           position:absolute; right:0; top:0; opacity:0.04; pointer-events:none;
           font-size:11px; line-height:1.6; color:#22c55e; font-family:monospace;
@@ -509,6 +519,9 @@ export default function PrimerDesignApp() {
           <div style={{display:"flex", alignItems:"center", gap:"16px", marginTop:"11px"}}>
             <a href="/help.html" className="btn-help">
               📖 Help &amp; User Guide
+            </a>
+            <a href="https://zhangc-lab.github.io/" target="_blank" rel="noopener" className="btn-lab">
+              🔬 Zhang Lab
             </a>
             <a href="mailto:congqiang_zhang@a-star.edu.sg" style={{color:"#22c55e", fontSize:"12px", textDecoration:"none"}}>
               Contact me
