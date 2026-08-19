@@ -491,9 +491,13 @@ export default function PrimerDesignApp() {
             SITE-DIRECTED MUTAGENESIS · WHOLE-PLASMID INVERSE PCR
           </div>
           <div style={{fontSize:"10px", color:"#3f3f46", marginTop:"5px", lineHeight:1.7}}>
-            Designed by Simon Zhang · Singapore Institute of Food and Biotechnology Innovation (SIFBI)<br/>
+            Designed by Simon, Congqiang Zhang · Singapore Institute of Food and Biotechnology Innovation (SIFBI)<br/>
             Agency for Science, Technology and Research (A*STAR)<br/>
-            <a href="mailto:simon_zhang@sifbi.a-star.edu.sg" style={{color:"#16a34a", textDecoration:"none"}}>
+            <a href="/help.html" style={{color:"#16a34a", textDecoration:"none"}}>
+              📖 Help &amp; user guide
+            </a>
+            {" · "}
+            <a href="mailto:congqiang_zhang@a-star.edu.sg" style={{color:"#16a34a", textDecoration:"none"}}>
               Contact me
             </a>
           </div>
