@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Help &ndash; PrimerForge</title>
+<meta name="description" content="User guide for PrimerForge: site-directed mutagenesis primer design for whole-plasmid inverse PCR." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0c0c0e; --panel:#18181b; --line:#27272a; --line2:#1c1c1e;
+    --text:#e4e4e7; --dim:#a1a1aa; --dimmer:#71717a; --faint:#52525b;
+    --accent:#16a34a; --amber:#f59e0b; --violet:#7c3aed;
+  }
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:'IBM Plex Mono','Courier New',monospace;
+    font-size:14px; line-height:1.75;
+  }
+  ::-webkit-scrollbar { width:6px; height:6px; }
+  ::-webkit-scrollbar-track { background:var(--panel); }
+  ::-webkit-scrollbar-thumb { background:#3f3f46; border-radius:3px; }
+
+  header.site {
+    border-bottom:1px solid var(--line2); padding:20px 32px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px; flex-wrap:wrap; position:sticky; top:0;
+    background:rgba(12,12,14,0.92); backdrop-filter:blur(8px); z-index:10;
+  }
+  .brand { font-family:'Space Grotesk',sans-serif; font-size:20px; font-weight:700; color:#f4f4f5; letter-spacing:-0.02em; }
+  .brand small { display:block; font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:400; color:var(--faint); letter-spacing:0.08em; margin-top:3px; }
+  .back {
+    border:1px solid #3f3f46; color:var(--dim); background:transparent;
+    border-radius:8px; padding:9px 18px; font-size:12px; text-decoration:none;
+    transition:all .2s; white-space:nowrap;
+  }
+  .back:hover { border-color:var(--accent); color:var(--accent); }
+
+  .wrap { max-width:860px; margin:0 auto; padding:36px 32px 96px; }
+
+  h2 {
+    font-family:'Space Grotesk',sans-serif; font-size:19px; font-weight:700;
+    color:#f4f4f5; margin:52px 0 14px; padding-bottom:10px;
+    border-bottom:1px solid var(--line); letter-spacing:-0.01em; scroll-margin-top:90px;
+  }
+  h2:first-of-type { margin-top:8px; }
+  h3 { font-family:'Space Grotesk',sans-serif; font-size:15px; font-weight:600; color:var(--accent); margin:30px 0 10px; scroll-margin-top:90px; }
+  p { margin:12px 0; color:var(--dim); }
+  strong { color:var(--text); font-weight:600; }
+  em { color:var(--dimmer); }
+  a { color:var(--accent); text-decoration:none; border-bottom:1px solid rgba(22,163,74,.35); }
+  a:hover { border-bottom-color:var(--accent); }
+  ul, ol { color:var(--dim); padding-left:22px; margin:12px 0; }
+  li { margin:7px 0; }
+  hr { border:none; border-top:1px solid var(--line); margin:44px 0; }
+
+  code {
+    background:#0f0f11; border:1px solid var(--line); border-radius:4px;
+    padding:1.5px 6px; font-size:12.5px; color:var(--amber); white-space:nowrap;
+  }
+
+  table { width:100%; border-collapse:collapse; margin:18px 0; font-size:12.5px; }
+  th {
+    text-align:left; padding:10px 14px; color:var(--faint); font-weight:600;
+    font-size:11px; letter-spacing:0.06em; text-transform:uppercase;
+    border-bottom:1px solid var(--line); white-space:nowrap;
+  }
+  td { padding:10px 14px; border-bottom:1px solid var(--line2); color:var(--dim); vertical-align:top; }
+  tbody tr:hover td { background:#141416; }
+  td:first-child { color:var(--text); }
+
+  blockquote {
+    margin:18px 0; padding:12px 18px; background:#1a1508;
+    border:1px solid #78350f; border-left:3px solid var(--amber);
+    border-radius:8px; color:#fcd34d;
+  }
+  blockquote p { margin:0; color:#fcd34d; }
+
+  footer.site { border-top:1px solid var(--line); margin-top:56px; padding-top:22px; font-size:12px; color:var(--faint); }
+
+  @media (max-width:640px) {
+    .wrap { padding:24px 18px 72px; }
+    header.site { padding:16px 18px; }
+    table { display:block; overflow-x:auto; white-space:nowrap; }
+  }
+  @media print {
+    body { background:#fff; color:#000; font-size:11pt; }
+    header.site, .back { display:none; }
+    h2, h3, strong, td:first-child { color:#000; }
+    p, td, li, ul, ol { color:#222; }
+    a { color:#000; border:none; }
+    th { color:#444; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="brand">
+    &#129516; PrimerForge &mdash; Help
+    <small>SITE-DIRECTED MUTAGENESIS &middot; WHOLE-PLASMID INVERSE PCR</small>
+  </div>
+  <a class="back" href="/">&larr; Back to the tool</a>
+</header>
+
+<div class="wrap">
+<h2>2. Quick start</h2>
+<ol>
+<li>Click <strong>💡 Load Example</strong> to populate an eGFP sequence and five test mutations.</li>
+<li>Click <strong>▶ Design Primers</strong>.</li>
+<li>Inspect the <strong>Cards</strong> view — mutated bases are highlighted in amber.</li>
+<li>Switch to <strong>Order List</strong> for the deduplicated set of oligos.</li>
+<li>Click <strong>⬇ Export Order List</strong> to download a two-column CSV ready to paste into a supplier order form.</li>
+</ol>
+<p>Then replace the example with your own sequence and mutations.</p>
+<hr />
+<h2>3. Inputs</h2>
+<h3>3.1 DNA sequence</h3>
+<p>Paste the <strong>coding sequence of your gene</strong>, from the A of the start codon, in frame. Raw sequence or FASTA both work; FASTA header lines beginning with <code>&gt;</code> are stripped automatically, whether you paste them or load them from file. All non-ACGT characters (whitespace, line numbers, ambiguity codes) are discarded before translation.</p>
+<p><strong>📂 Load FASTA</strong> accepts <code>.fasta</code>, <code>.fa</code>, and <code>.txt</code>. The nucleotide count appears next to the buttons once a sequence is loaded — check it is a multiple of 3 and matches your expected ORF length.</p>
+<blockquote>
+<p>⚠️ Paste the <strong>gene</strong>, not the whole plasmid. Numbering and translation both assume the sequence starts at codon 1 (or at a fixed offset — see <em>Frame shift</em>).</p>
+</blockquote>
+<h3>3.2 Organism (codon usage)</h3>
+<p>Selects the codon assigned to each substituted amino acid.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Table</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>E. coli</strong></td>
+<td><em>E. coli</em> K-12 most frequent codons</td>
+<td>Hershberg &amp; Petrov 2008</td>
+</tr>
+<tr>
+<td><strong>S. cer.</strong></td>
+<td><em>S. cerevisiae</em> most frequent codons</td>
+<td>Sharp &amp; Li 1987</td>
+</tr>
+<tr>
+<td><strong>P. pas.</strong></td>
+<td><em>P. pastoris</em> (<em>K. phaffii</em>) most frequent codons</td>
+<td>Xu et al. 2021</td>
+</tr>
+</tbody>
+</table>
+<p>One preferred codon per amino acid is used; the tool does not sample alternative synonymous codons.</p>
+<h3>3.3 Mutation list</h3>
+<p>Standard one-letter protein nomenclature: <strong><code>[WT residue][position][new residue]</code></strong>, e.g. <code>D110A</code>. Separate entries with commas, spaces, or newlines — all three are accepted interchangeably.</p>
+<p>The WT residue you type is <strong>verified against the translated sequence</strong>. A mismatch raises an error rather than designing a wrong primer, so it doubles as a frame check.</p>
+<p><strong>Degenerate codons</strong> for saturation mutagenesis use two reserved letters in the "new residue" position:</p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Codon</th>
+<th>Coverage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>X</code></td>
+<td><strong>NNK</strong></td>
+<td>All 20 amino acids, 32 codons, one stop (TAG)</td>
+</tr>
+<tr>
+<td><code>Z</code></td>
+<td><strong>NDT</strong></td>
+<td>12 amino acids, 12 codons, no stops, no redundancy</td>
+</tr>
+</tbody>
+</table>
+<p>So <code>G21X</code> orders an NNK library at position 21; <code>G21Z</code> orders the balanced NDT subset. Both can be listed alongside defined mutants at the same site — see <em>Shared primers</em>.</p>
+<h3>3.4 Mutation mode</h3>
+<p>Determines which primer carries the mutation. This is the single most consequential choice for cost.</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Behaviour</th>
+<th>Use when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>⇄ Both</strong></td>
+<td>Both primers carry the mutant codon; symmetric overlap design</td>
+<td>Single defined mutants; most robust amplification</td>
+</tr>
+<tr>
+<td><strong>→ Fwd only</strong></td>
+<td>FWD carries the mutation; REV is pure wild-type</td>
+<td>Several variants at one site — the WT reverse primer is shared</td>
+</tr>
+<tr>
+<td><strong>← Rev only</strong></td>
+<td>REV carries the mutation; FWD is pure wild-type</td>
+<td>As above, mirrored; useful if the downstream flank has poor Tm or a repeat</td>
+</tr>
+</tbody>
+</table>
+<p>In <code>fwd</code>/<code>rev</code> mode the wild-type primer is identical for every variant at that position, so a five-variant site needs six oligos instead of ten.</p>
+<h3>3.5 Parameters</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>What it controls</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Frame shift</strong></td>
+<td>0</td>
+<td>Nucleotide offset added to the residue number, for constructs whose numbering does not start at codon 1 — e.g. <code>-9</code> when the sequence includes a 3-residue N-terminal extension not counted in the published numbering</td>
+</tr>
+<tr>
+<td><strong>Target Tm (°C)</strong></td>
+<td>60</td>
+<td>Tm target for the priming region of the mutation-carrying primer</td>
+</tr>
+<tr>
+<td><strong>Min anchor (nt)</strong></td>
+<td>17</td>
+<td>Minimum priming region length, enforced before Tm is checked</td>
+</tr>
+<tr>
+<td><strong>Tm priming (°C)</strong></td>
+<td>Tm − 10</td>
+<td>Tm target for the pure wild-type shared primer in <code>fwd</code>/<code>rev</code> mode. Leave blank to use the default</td>
+</tr>
+</tbody>
+</table>
+<p>Priming regions grow one base at a time from the mutation site until <strong>both</strong> the minimum anchor length and the Tm target are satisfied, so raising <code>Min anchor</code> and raising <code>Target Tm</code> both lengthen primers — and cost.</p>
+<hr />
+<h2>4. Reading the results</h2>
+<h3>4.1 Summary bar</h3>
+<table>
+<thead>
+<tr>
+<th>Box</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PROCESSED</strong></td>
+<td>Mutations parsed, including failed ones</td>
+</tr>
+<tr>
+<td><strong>WARNINGS</strong></td>
+<td>Designs that succeeded but tripped a quality check</td>
+</tr>
+<tr>
+<td><strong>ERRORS</strong></td>
+<td>Mutations that could not be designed</td>
+</tr>
+<tr>
+<td><strong>TOTAL COST</strong></td>
+<td>Sum of unique primers only, at SGD 0.18/bp</td>
+</tr>
+</tbody>
+</table>
+<h3>4.2 Case convention</h3>
+<p>Within every primer sequence:</p>
+<ul>
+<li><strong>UPPERCASE</strong> = bases changed relative to wild type (highlighted amber)</li>
+<li>lowercase = wild-type bases</li>
+</ul>
+<p>For degenerate codons all three bases are uppercase, since every position is variable.</p>
+<h3>4.3 Card fields</h3>
+<p>Each card reports, per primer: length, Tm, GC%, and the codon change in the form <code>D(gat)→(gcg)A</code>. The mutated full-length DNA sequence is also stored and exported — use it as the reference for sequencing verification.</p>
+<h3>4.4 Warnings</h3>
+<table>
+<thead>
+<tr>
+<th>Warning</th>
+<th>Threshold</th>
+<th>Suggested response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Fwd/Rev self-dimer</code></td>
+<td>Any 5-nt self-complementary stretch</td>
+<td>Usually tolerable; if the PCR fails, shift the anchor by changing <code>Min anchor</code> by ±2</td>
+</tr>
+<tr>
+<td><code>Fwd/Rev GC x%</code></td>
+<td>Outside 40–65%</td>
+<td>Raise <code>Target Tm</code> to extend into more balanced flanking sequence</td>
+</tr>
+<tr>
+<td><code>Fwd/Rev Tm low</code></td>
+<td>Below 55 °C</td>
+<td>Raise <code>Target Tm</code> or <code>Min anchor</code>; check the flank is not AT-rich or repetitive</td>
+</tr>
+</tbody>
+</table>
+<p>Warnings are advisory. A flagged primer is still exported and will often work — treat them as a ranked to-do list if amplification fails.</p>
+<h3>4.5 Shared primers</h3>
+<p>When a primer sequence has already appeared earlier in the run, it is tagged <strong>♻ Reused from <em>mutation</em></strong> and priced at SGD 0. This is what makes <code>fwd</code>/<code>rev</code> mode economical for site-saturation panels: <code>G21A</code>, <code>G21X</code>, and <code>G21Z</code> in <code>fwd</code> mode all share one reverse primer.</p>
+<p>The <strong>Order List</strong> tab shows only the primers you actually need to buy, named <code>&lt;mutation&gt;_Fwd</code> / <code>&lt;mutation&gt;_Rev</code>; reused ones are excluded.</p>
+<h3>4.6 Exports</h3>
+<table>
+<thead>
+<tr>
+<th>Button</th>
+<th>File</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>⬇ Export CSV</strong></td>
+<td><code>primer_design_results.csv</code></td>
+<td>Full record: both primers, lengths, Tm, GC%, codon change, per-primer cost, warnings, shared-primer notes, mutated DNA sequence, and a total row</td>
+</tr>
+<tr>
+<td><strong>⬇ Export Order List</strong></td>
+<td><code>primer_order_list.csv</code></td>
+<td>Two columns — primer name and sequence — deduplicated, for direct submission to an oligo supplier</td>
+</tr>
+</tbody>
+</table>
+<p>Keep the full CSV with your construct records; it documents exactly what was ordered and why.</p>
+<hr />
+<h2>5. Error messages</h2>
+<table>
+<thead>
+<tr>
+<th>Message</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Cannot parse position from "..."</code></td>
+<td>Malformed entry, e.g. <code>Ala110Ala</code> or <code>D-110A</code></td>
+<td>Use one-letter format: <code>D110A</code></td>
+</tr>
+<tr>
+<td><code>Position N out of range (protein length L)</code></td>
+<td>Residue number beyond the ORF, or a frame problem</td>
+<td>Check the sequence is the full CDS and that <code>Frame shift</code> is correct</td>
+</tr>
+<tr>
+<td><code>Expected D at position 110, found G</code></td>
+<td>The WT residue does not match the translation at that position</td>
+<td>Almost always a numbering offset — set <code>Frame shift</code>. Otherwise confirm you pasted the right gene or the right frame</td>
+</tr>
+<tr>
+<td><code>Unknown amino acid "B" for this organism</code></td>
+<td>Letter is not a standard residue, <code>*</code>, <code>X</code>, or <code>Z</code></td>
+<td>Use a valid one-letter code</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>Expected ... found ...</code> error is the most useful diagnostic in the tool: if it fires on every mutation, your numbering is offset by a constant, and <code>Frame shift</code> will fix all of them at once.</p>
+<hr />
+<h2>6. How primers are calculated</h2>
+<p><strong>Melting temperature.</strong> Nearest-neighbour thermodynamics (SantaLucia 1998) with the Owczarzy et al. 2004 salt correction, evaluated at 50 mM Na⁺ and 250 nM primer. Values are calibrated to agree with Biopython <code>Tm_NN(saltcorr=7)</code>.</p>
+<p><strong>Priming region growth.</strong> Starting from the mutant codon, the region is extended base by base — leftward for the reverse primer, rightward for the forward primer — until both the minimum anchor length and the Tm target are met. For degenerate codons the wild-type sequence is used for the Tm calculation, since nearest-neighbour parameters are undefined for ambiguous bases.</p>
+<p><strong>Primer architecture.</strong> In all three modes the primer pair shares a <strong>12-nt overlap</strong> spanning the mutation site. The amplicon therefore carries a 12-bp terminal direct repeat.</p>
+<p><strong>GC content</strong> is computed over the whole primer, including the overlap region.</p>
+<hr />
+<h2>7. Downstream protocol</h2>
+<p><em>Adapt this section to your lab's standard workflow.</em></p>
+<p>The 12-bp terminal overlap means the linear PCR product is recircularised by <strong>overlap-dependent assembly</strong> — HiFi/Gibson assembly, In-Fusion, or <em>in vivo</em> recombination in a recombination-competent <em>E. coli</em> strain — rather than by blunt-end ligation, which would duplicate the overlap.</p>
+<p>A typical run:</p>
+<ol>
+<li>High-fidelity PCR across the whole plasmid using the designed pair. Extension time scaled to the full plasmid length.</li>
+<li><code>DpnI</code> digestion of the template (37 °C, 1 h).</li>
+<li>Recircularisation by the assembly method above.</li>
+<li>Transformation and colony PCR.</li>
+<li>Sanger sequencing across the mutation site, verified against the <strong>Mutated DNA Sequence</strong> column of the exported CSV.</li>
+</ol>
+<p>For NNK/NDT libraries, pool sufficient transformants for the target coverage before sequencing a representative sample to confirm codon distribution.</p>
+<hr />
+<h2>8. Limitations</h2>
+<ul>
+<li>One preferred codon per amino acid; no synonymous-codon optimisation or restriction-site avoidance.</li>
+<li>Self-dimer detection is a simple 5-nt complementarity scan, not a full thermodynamic secondary-structure prediction.</li>
+<li>No hairpin, primer-dimer (cross-pair), or template mispriming check — verify against the full plasmid if the target has paralogous or repeated regions.</li>
+<li>Insertions, deletions, and multi-residue changes in a single primer are not supported; only single-codon substitutions.</li>
+<li>Cost is fixed at SGD 0.18/bp and reflects one supplier's standard desalted synthesis. Treat it as a relative ranking, not a quotation.</li>
+</ul>
+<hr />
+<h2>9. References</h2>
+<ul>
+<li>SantaLucia J (1998) <em>Proc Natl Acad Sci USA</em> <strong>95</strong>:1460–1465 — nearest-neighbour thermodynamics</li>
+<li>Owczarzy R et al. (2004) <em>Biochemistry</em> <strong>43</strong>:3537–3554 — salt correction</li>
+<li>Hershberg R, Petrov DA (2008) <em>Proc Natl Acad Sci USA</em> — <em>E. coli</em> codon usage</li>
+<li>Sharp PM, Li WH (1987) <em>Nucleic Acids Res</em> — <em>S. cerevisiae</em> codon usage</li>
+<li>Xu et al. (2021) <em>Microb Cell Fact</em> — <em>P. pastoris</em> codon usage</li>
+</ul>
+<hr />
+<h2>10. Contact</h2>
+<p>Designed by Simon, Congqiang Zhang, Singapore Institute of Food and Biotechnology Innovation (SIFBI), A*STAR.
+<a href="mailto:congqiang_zhang@a-star.edu.sg">congqiang_zhang@a-star.edu.sg</a> · Issues and feature requests: <a href="https://github.com/zhangc-lab/PrimerDesign/issues">GitHub</a></p>
+<p>Released under the MIT License.</p>
+<footer class="site">
+  PrimerForge &middot; Zhang Lab, SIFBI, A*STAR &middot;
+  <a href="https://github.com/zhangc-lab/PrimerDesign">Source on GitHub</a> &middot; MIT License
+</footer>
+</div>
+
+</body>
+</html>
